@@ -37,13 +37,12 @@ function App() {
     setList([]);
   };
   const handleEdit = (id) => {
-    if (updateTask != "") {
       const newList = list.map((task) =>
       task.id === id ? { ...task, isEditing: true } : task
     );
       setList(newList);
-      setUpdateTask("");
-    }
+      setUpdateTask(list.find((task)=>task.id==id).name)
+     
   };
   const handleCancel = (id) => {
     const newList = list.map((task) =>
@@ -56,9 +55,8 @@ function App() {
     setList(newList);
   };
   const handleUpdate = (id) => {
-    const updatedTask = "";
     const newList = list.map((task) =>
-      task.id === id ? { ...task, isEditing: false, name: updatedTask } : task
+      task.id === id ? { ...task, isEditing: false, name: updateTask } : task
     );
     setList(newList);
   };
