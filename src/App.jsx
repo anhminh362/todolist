@@ -6,7 +6,6 @@ import "./App.css";
 // import AddIcon from "../public/add.svg";
 function App() {
   const listTask = JSON.parse(localStorage.getItem("listTask"));
-  console.log(listTask);
   const [list, setList] = useState(listTask ?? []);
   const [count, setCount] = useState(0);
   const [newTask, setNewTask] = useState("");
@@ -80,8 +79,8 @@ function App() {
     <div className="mt-16 w-[500px]">
       <div className="flex flex-col gap-6">
         <div className="flex justify-between ">
-          <h1 className="text-3xl font-bold uppercase text-white dark:text-blue-600 ">
-            my task
+          <h1 className="tracking-[.25em] text-3xl font-bold uppercase text-white dark:text-blue-600 ">
+            my tasks
           </h1>
           <button className="flex flex-wrap w-10 h-15 justify-center content-center p-0 bg-slate-300 ">
             <svg
@@ -124,7 +123,7 @@ function App() {
             />
           </div>
           <div>
-            <button className="text-gray-500" onClick={() => handleAdd()}>
+            <button className="text-gray-500 uppercase" onClick={() => handleAdd()}>
               Add
             </button>
           </div>
