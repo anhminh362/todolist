@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import PencilIcon from "../public/pencil.svg";
-import DelIcon from "../public/del.svg";
-import CancelIcon from "../public/cancel.svg";
-import AddIcon from "../public/add.svg";
+// import PencilIcon from "../public/pencil.svg";
+// import DelIcon from "../public/del.svg";
+// import CancelIcon from "../public/cancel.svg";
+// import AddIcon from "../public/add.svg";
 function App() {
+  const listTask = JSON.parse(localStorage.getItem("listTask"));
+  console.log(listTask);
+  const [list, setList] = useState(listTask ?? []);
   const [count, setCount] = useState(0);
-  const [list, setList] = useState([
-    { id: 0, name: "ReactJS", isDone: false, isEditing: false },
-  ]);
   const [newTask, setNewTask] = useState("");
   const [updateTask, setUpdateTask] = useState("");
 
@@ -23,54 +23,62 @@ function App() {
   const handleAdd = () => {
     if (newTask != "") {
       var nextId;
-      list.length==0? nextId=0 : nextId=list[list.length - 1].id+1;
-      setList([
+      list.length == 0 ? (nextId = 0) : (nextId = list[list.length - 1].id + 1);
+      var newList = [
         ...list,
         { id: nextId, name: newTask, isDone: false, isEditing: false },
-      ]);
+      ];
+      setList(newList);
       setNewTask("");
+      localStorage.setItem("listTask", JSON.stringify(newList));
     }
   };
   const handleReset = () => {
     setList([]);
+    localStorage.removeItem("listTask");
   };
   const handleEdit = (id) => {
-      const newList = list.map((task) =>
+    var newList = list.map((task) =>
       task.id === id ? { ...task, isEditing: true } : task
     );
-      setList(newList);
-      setUpdateTask(list.find((task)=>task.id==id).name)
-     
+    setList(newList);
+    setUpdateTask(list.find((task) => task.id == id).name);
   };
   const handleCancel = (id) => {
-    const newList = list.map((task) =>
+    var newList = list.map((task) =>
       task.id === id ? { ...task, isEditing: false } : task
     );
     setList(newList);
+    setUpdateTask("");
   };
   const handleDelete = (id) => {
-    var newList = list.filter((task)=>task.id!=id);
+    var newList = list.filter((task) => task.id != id);
     setList(newList);
+    localStorage.setItem("listTask", JSON.stringify(newList));
   };
   const handleUpdate = (id) => {
-    const newList = list.map((task) =>
-      task.id === id ? { ...task, isEditing: false, name: updateTask } : task
-    );
-    setList(newList);
+    if (updateTask) {
+      var newList = list.map((task) =>
+        task.id === id ? { ...task, isEditing: false, name: updateTask } : task
+      );
+      setList(newList);
+      localStorage.setItem("listTask", JSON.stringify(newList));
+    }
   };
   const handleChangeStatus = (id) => {
-    const newList = list.map((task) =>
+    var newList = list.map((task) =>
       task.id === id ? { ...task, isDone: !task.isDone } : task
     );
     setList(newList);
+    localStorage.setItem("listTask", JSON.stringify(newList));
   };
   useEffect(() => {
-    var toDoList=list.filter((task)=>task.isDone==false)
+    var toDoList = list.filter((task) => task.isDone == false);
     setCount(toDoList.length);
   }, [list]);
   return (
     <div className="mt-16 w-[500px]">
-      <div className="flex flex-col gap-5">
+      <div className="flex flex-col gap-6">
         <div className="flex justify-between ">
           <h1 className="text-3xl font-bold uppercase text-white dark:text-blue-600 ">
             my task
@@ -121,18 +129,20 @@ function App() {
             </button>
           </div>
         </div>
-
-        <div className="p-3 bg-white border rounded-lg flex flex-col gap-5 h-80">
-          <div className=" flex justify-between">
+        <div className="p-3 bg-white border rounded-lg flex flex-col gap-5 min-h-80">
+          <div className=" flex justify-between border-b-2 pb-3">
             <p className="text-gray-500">{count} tasks left</p>
             <button className="text-gray-500" onClick={() => handleReset()}>
               Clear all tasks
             </button>
           </div>
           {list.length ? (
-          <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-3">
               {list.map((task) => (
-                <div className="flex justify-between" key={task.id}>
+                <div
+                  className="flex justify-between border-b-2 pb-3"
+                  key={task.id}
+                >
                   <div className="flex gap-3">
                     {!task.isEditing && (
                       <input
@@ -142,27 +152,16 @@ function App() {
                         id={task.id}
                         onClick={() => handleChangeStatus(task.id)}
                         defaultChecked={task.isDone}
-                      ></input>
-                    )}
-                    {!task.isDone ? (
-                      <input
-                        className="font-semibold  bg-white"
-                        defaultValue={task.name}
-                        onChange={(e) => {
-                          handleChangeUpdate(e);
-                        }}
-                        disabled={!task.isEditing}
-                      />
-                    ) : (
-                      <input
-                        className="font-semibold line-through text-gray-500 bg-white"
-                        defaultValue={task.name}
-                        onChange={(e) => {
-                          handleChangeUpdate(e);
-                        }}
-                        disabled={!task.isEditing}
                       />
                     )}
+                    <input
+                      className={`font-semibold bg-white ${
+                        task.isDone ? "line-through text-gray-500" : ""
+                      }`}
+                      value={updateTask !== "" && task.isEditing ? updateTask : task.name}
+                      onChange={(e) => handleChangeUpdate(e)}
+                      disabled={!task.isEditing}
+                    />
                   </div>
                   <div className="flex gap-3">
                     {task.isEditing ? (
