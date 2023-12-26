@@ -14,7 +14,6 @@ function App() {
 
   const handleChange = async (e) => {
     const inputValue = await e.target.value;
-    console.log(inputValue);
     setNewTask(inputValue);
   };
   const handleChangeUpdate = async (e) => {
@@ -24,7 +23,6 @@ function App() {
   const handleAdd = () => {
     if (newTask != "") {
       var nextId;
-      console.log(list.length);
       list.length==0? nextId=0 : nextId=list[list.length - 1].id+1;
       setList([
         ...list,
@@ -67,8 +65,8 @@ function App() {
     setList(newList);
   };
   useEffect(() => {
-    setCount(list.length);
-    console.log(list);
+    var toDoList=list.filter((task)=>task.isDone==false)
+    setCount(toDoList.length);
   }, [list]);
   return (
     <div className="mt-16 w-[500px]">
@@ -92,7 +90,7 @@ function App() {
           </button>
         </div>
         <div className="p-3 bg-white border rounded-lg flex justify-between ">
-          <div className="flex flex-wrap content-center gap-3 w-3/4">
+          <div className="flex flex-wrap content-center gap-2 w-full">
             <svg
               className="h-6 w-6 text-gray-500"
               fill="none"
@@ -138,27 +136,31 @@ function App() {
                   <div className="flex gap-3">
                     {!task.isEditing && (
                       <input
+                        className=""
                         type="checkbox"
                         name={task}
                         id={task.id}
                         onClick={() => handleChangeStatus(task.id)}
+                        defaultChecked={task.isDone}
                       ></input>
                     )}
                     {!task.isDone ? (
                       <input
-                        className="font-semibold"
-                        value={task.isEditing?updateTask:task.name}
+                        className="font-semibold  bg-white"
+                        defaultValue={task.name}
                         onChange={(e) => {
                           handleChangeUpdate(e);
                         }}
+                        disabled={!task.isEditing}
                       />
                     ) : (
                       <input
-                        className="font-semibold line-through text-gray-500"
-                        value={task.isEditing?updateTask:task.name}
+                        className="font-semibold line-through text-gray-500 bg-white"
+                        defaultValue={task.name}
                         onChange={(e) => {
                           handleChangeUpdate(e);
                         }}
+                        disabled={!task.isEditing}
                       />
                     )}
                   </div>
